@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Theory Simulation Studio | AI & Evolutionary Arena</title>
+    <!-- Google Fonts: Inter & JetBrains Mono for soothing typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Three.js 3D Graphics Engine & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="logo-area">
+            <span class="logo-icon">⚡</span>
+            <div>
+                <span class="logo-title">GAME THEORY STUDIO</span>
+                <span class="logo-tag">SIMULATION & AI</span>
+            </div>
+        </div>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-scenarios">
+                <span>📚</span> Scenarios & Lab
+            </button>
+            <button class="tab-btn" data-tab="tab-3d-arena">
+                <span>🎮</span> 3D Playable Arena
+            </button>
+            <button class="tab-btn" data-tab="tab-spatial">
+                <span>🌐</span> 2D Spatial Arena
+            </button>
+            <button class="tab-btn" data-tab="tab-tournament">
+                <span>🏆</span> Axelrod Tournament
+            </button>
+            <button class="tab-btn" data-tab="tab-ai-lab">
+                <span>🤖</span> AI & Deep RL Lab
+            </button>
+            <button class="tab-btn" data-tab="tab-sandbox">
+                <span>🧪</span> Matrix Sandbox
+            </button>
+        </nav>
+
+        <div class="header-actions">
+            <button class="btn-icon" id="themeToggleBtn" title="Toggle Calm Dark / Clean Light Theme">🌓</button>
+            <button class="btn-icon" id="muteBtn" title="Toggle Sound">🔊</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==========================================
+             TAB 1: SCENARIOS & INTERACTIVE DUEL
+             ========================================== -->
+        <section id="tab-scenarios" class="tab-content active">
+            <!-- 15-Second Plain English Beginner Guide -->
+            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.06)); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 1.15rem 1.5rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem;">
+                    <span style="background: var(--accent-primary); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">🌱 Beginners Guide in 15 Seconds</span>
+                    <strong style="font-size: 0.95rem; color: var(--text-primary);">What is Game Theory in plain English?</strong>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;">
+                    <div>
+                        <strong style="color: var(--text-primary);">1️⃣ The Math of Other People:</strong> It's how people, businesses, and countries make decisions when the result depends on what <em>both</em> sides do.
+                    </div>
+                    <div>
+                        <strong style="color: var(--text-primary);">2️⃣ The Selfish Trap:</strong> When both people act selfishly, both end up worse off than if they had simply trusted each other.
+                    </div>
+                    <div>
+                        <strong style="color: var(--text-primary);">3️⃣ Try It Right Now:</strong> Pick a story below. Then click <strong>"Cooperate"</strong> or <strong>"Defect"</strong> on the right to test your wits against the AI!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Selector Strip -->
+            <div class="scenario-strip" id="scenarioStrip"></div>
+
+            <div class="grid-2col">
+                <!-- Left: Theory & Payoffs -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title" id="scenarioTitle">⚖️ The Prisoner's Dilemma</div>
+                            <div id="scenarioTagline" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Payoff Matrix Display -->
+                    <div class="matrix-container">
+                        <table class="matrix-table" id="scenarioMatrixTable"></table>
+                    </div>
+
+                    <!-- Equilibrium Breakdown Cards -->
+                    <div class="eq-summary-grid">
+                        <div class="eq-card">
+                            <div class="eq-card-title">⚠️ The Deadlock Trap</div>
+                            <div class="eq-card-val" id="pureNashSummary">-</div>
+                        </div>
+                        <div class="eq-card">
+                            <div class="eq-card-title">🎲 The Bluffing Game</div>
+                            <div class="eq-card-val" id="mixedNashSummary">-</div>
+                        </div>
+                        <div class="eq-card">
+                            <div class="eq-card-title">🎯 The Selfish Urge</div>
+                            <div class="eq-card-val" id="dominantSummary">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Theory & Concept Walkthrough -->
+                    <div class="theory-box" id="scenarioTheory" style="margin-top: 1.5rem;"></div>
+                </div>
+
+                <!-- Right: Play Mode (Human vs AI Duel) -->
+                <div class="panel">
+                    <div class="panel-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                        <div>
+                            <div class="panel-title" style="white-space: nowrap;">🎮 Play Yourself: You vs AI</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Make your move and watch how the AI reacts!</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-left: auto;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Opponent:</label>
+                            <select id="duelOpponentSelect" class="btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; font-weight: 600;"></select>
+                            <button class="btn-secondary" id="btnResetDuel" style="padding: 0.4rem 0.75rem;" title="Reset Game">↺</button>
+                        </div>
+                    </div>
+
+                    <!-- Scoreboard -->
+                    <div class="duel-arena">
+                        <div class="duel-header">
+                            <div class="player-card">
+                                <div class="player-avatar p1-avatar">👤</div>
+                                <div>
+                                    <div class="player-info-name" style="color: var(--cyan);">You (Player 1)</div>
+                                    <div class="player-score-large" id="duelHumanScore">0</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-muted);">VS</div>
+                            <div class="player-card" style="text-align: right; flex-direction: row-reverse;">
+                                <div class="player-avatar p2-avatar">🤖</div>
+                                <div>
+                                    <div class="player-info-name" style="color: var(--rose);">Opponent AI</div>
+                                    <div class="player-score-large" id="duelOpponentScore">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opponent AI Psychology / Thoughts -->
+                        <div class="duel-mind-box">
+                            <span class="duel-mind-icon">🧠</span>
+                            <span id="duelMindText">Opponent is analyzing initial situation...</span>
+                        </div>
+
+                        <!-- Player Action Buttons -->
+                        <div class="duel-action-buttons">
+                            <button class="btn-action coop" id="btnDuelAct0">
+                                <span class="btn-action-icon">🕊️</span>
+                                <span class="btn-action-title">Cooperate</span>
+                                <span class="btn-action-subtitle">Play mutual benefit</span>
+                            </button>
+                            <button class="btn-action defect" id="btnDuelAct1">
+                                <span class="btn-action-icon">⚡</span>
+                                <span class="btn-action-title">Defect</span>
+                                <span class="btn-action-subtitle">Play self-interest</span>
+                            </button>
+                        </div>
+
+                        <!-- Round History Log -->
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 0.5rem;">
+                            Match History
+                        </div>
+                        <div class="duel-round-history" id="duelHistoryList">
+                            <div style="text-align: center; color: var(--text-muted); padding: 1rem;">Make your first move above!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 2: 3D PLAYABLE ARENA (THREE.JS)
+             ========================================== -->
+        <section id="tab-3d-arena" class="tab-content">
+            <!-- 3D Sub-Mode Selector -->
+            <div style="display: flex; gap: 0.8rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                <button class="btn-secondary active" id="btn3DModeHawk" style="flex: 1; padding: 0.75rem; font-weight: 700; border-color: var(--cyan);">
+                    🦅 3D Brinkmanship Highway (Hawk-Dove)
+                </button>
+                <button class="btn-secondary" id="btn3DModeVault" style="flex: 1; padding: 0.75rem; font-weight: 700;">
+                    ⚡ 3D Cyber Vault Duel (Prisoner's Matrix)
+                </button>
+                <button class="btn-secondary" id="btn3DModeVoxel" style="flex: 1; padding: 0.75rem; font-weight: 700;">
+                    🌐 3D Voxel Biosphere (3D God Mode)
+                </button>
+            </div>
+
+            <div class="panel" style="padding: 1rem; position: relative;">
+                <!-- 3D HUD Message Overlay -->
+                <div id="hud3DText" style="position: absolute; top: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 10; background: rgba(7, 9, 14, 0.85); backdrop-filter: blur(8px); border: 1px solid var(--border-active); border-radius: 8px; padding: 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 700; color: #fff; text-align: center; box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);">
+                    ⚡ Ready for Brinkmanship Duel! Choose your decision below.
+                </div>
+
+                <!-- 3D Camera Preset Pills -->
+                <div style="position: absolute; top: 5rem; right: 1.5rem; z-index: 10; display: flex; gap: 0.4rem;">
+                    <button class="btn-secondary" id="btnCamOrbit" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; background: rgba(0,0,0,0.6);">🎥 Orbit Cam</button>
+                    <button class="btn-secondary" id="btnCamDriver" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; background: rgba(0,0,0,0.6);">🏎️ Cockpit Cam</button>
+                    <button class="btn-secondary" id="btnCamTop" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; background: rgba(0,0,0,0.6);">📐 Top Cam</button>
+                </div>
+
+                <!-- 3D WebGL Canvas Container -->
+                <div id="arena3DContainer" style="width: 100%; height: 560px; border-radius: 12px; overflow: hidden; background: #06080f; position: relative;"></div>
+
+                <!-- Interactive 3D Control Dashboard -->
+                <div style="margin-top: 1rem; background: rgba(10, 14, 23, 0.8); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem;">
+                    <!-- Controls for Hawk-Dove Mode -->
+                    <div id="controls3DHawk" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <h3 style="font-size: 1.1rem; color: #fff;">Brinkmanship Duel Controls</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Two vehicles racing at 180 km/h. Will you swerve or charge straight?</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <label style="font-size: 0.82rem; color: var(--text-muted);">AI Opponent:</label>
+                                <select id="hawkOpponentSelect" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"></select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <button class="btn-action coop" id="btn3DHawkSwerve" style="border-width: 2px;">
+                                <span class="btn-action-icon">🕊️</span>
+                                <span class="btn-action-title">SWERVE (Dove)</span>
+                                <span class="btn-action-subtitle">Give way & save face (+1 or +3)</span>
+                            </button>
+                            <button class="btn-action defect" id="btn3DHawkStay" style="border-width: 2px;">
+                                <span class="btn-action-icon">🦅</span>
+                                <span class="btn-action-title">STAY ON COURSE (Hawk)</span>
+                                <span class="btn-action-subtitle">Refuse to swerve & seek glory (+5 or -10)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Controls for Cyber Vault Mode -->
+                    <div id="controls3DVault" style="display: none; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <h3 style="font-size: 1.1rem; color: #fff;">3D Holographic Vault Duel</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Fire real-time energy lasers or raise protective plasma shields!</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <label style="font-size: 0.82rem; color: var(--text-muted);">AI Strategy:</label>
+                                <select id="vaultOpponentSelect" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"></select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <button class="btn-action coop" id="btn3DVaultCoop">
+                                <span class="btn-action-icon">🛡️</span>
+                                <span class="btn-action-title">RAISE SHIELD (Cooperate)</span>
+                                <span class="btn-action-subtitle">Mutual defense (+3)</span>
+                            </button>
+                            <button class="btn-action defect" id="btn3DVaultDefect">
+                                <span class="btn-action-icon">⚡</span>
+                                <span class="btn-action-title">FIRE LASER (Defect)</span>
+                                <span class="btn-action-subtitle">Preemptive strike (+5 or +1)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Controls for Voxel Biosphere Mode -->
+                    <div id="controls3DVoxel" style="display: none; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <h3 style="font-size: 1.1rem; color: #fff;">3D Voxel Biosphere Controls</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Orbit in 3D (Left click + drag, Right click + drag, Scroll to zoom). Click any voxel to mutate!</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-primary" id="btn3DVoxelStep">Evolution Step ⏭</button>
+                                <button class="btn-secondary" id="btn3DVoxelReset">Reset Voxel Grid ↺</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             TAB 2: 2D SPATIAL EVOLUTIONARY ARENA
+             ========================================== -->
+        <section id="tab-spatial" class="tab-content">
+            <div class="spatial-container">
+                <!-- Canvas Left -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🌐 Spatial Grid Ecosystem (Cellular Automata)</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
+                            Generation: <strong id="spatialGenCount" style="color: var(--cyan); font-family: monospace;">0</strong>
+                        </div>
+                    </div>
+
+                    <!-- Live Population Distribution Bar -->
+                    <div class="pop-bar-container" id="spatialPopBar"></div>
+
+                    <!-- Grid Canvas -->
+                    <div class="canvas-wrapper">
+                        <canvas id="spatialCanvas" width="560" height="560"></canvas>
+                    </div>
+
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.6rem; text-align: center;">
+                        💡 <strong>Interactive Brush:</strong> Click and drag on the grid to paint strategies directly onto the battlefield!
+                    </p>
+                </div>
+
+                <!-- Controls Right -->
+                <div class="panel spatial-controls">
+                    <div class="panel-header">
+                        <div class="panel-title">⚙️ Ecosystem Controls</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn-primary" id="btnSpatialPlay" style="flex: 1;">▶ Start Evolution</button>
+                        <button class="btn-secondary" id="btnSpatialStep">Step ⏭</button>
+                        <button class="btn-secondary" id="btnSpatialReset">↺</button>
+                    </div>
+
+                    <!-- Speed Slider -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Evolution Speed</span>
+                            <span id="speedVal">15 FPS</span>
+                        </div>
+                        <input type="range" id="spatialSpeed" min="1" max="40" value="15">
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="control-group">
+                        <div class="control-label">Ecosystem Preset</div>
+                        <select id="spatialPresetSelect" class="btn-secondary" style="width: 100%; padding: 0.5rem;">
+                            <option value="random_soup">Primordial Soup (Random Mix)</option>
+                            <option value="tft_fortress">Tit-for-Tat Fortress vs Defector Sea</option>
+                            <option value="coop_vs_defect">Cooperators vs Defectors Border</option>
+                            <option value="three_way">Three-Way Battle (Coop, Defect, Pavlov)</option>
+                        </select>
+                    </div>
+
+                    <!-- Brush Selector -->
+                    <div class="control-group">
+                        <div class="control-label">Strategy Brush (Click & Drag to Paint)</div>
+                        <div class="brush-selector">
+                            <button class="brush-btn active" data-brush="always_defect">
+                                <span class="brush-color-dot" style="background: #ff0054;"></span> Defector
+                            </button>
+                            <button class="brush-btn" data-brush="always_coop">
+                                <span class="brush-color-dot" style="background: #00f5d4;"></span> Cooperator
+                            </button>
+                            <button class="brush-btn" data-brush="tit_for_tat">
+                                <span class="brush-color-dot" style="background: #00f2fe;"></span> Tit-for-Tat
+                            </button>
+                            <button class="brush-btn" data-brush="pavlov">
+                                <span class="brush-color-dot" style="background: #ffb703;"></span> Pavlov
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Population Stats -->
+                    <div class="control-group">
+                        <div class="control-label">Population Share</div>
+                        <div id="spatialPopStats" style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 6px;"></div>
+                    </div>
+
+                    <!-- Scientific Explanation -->
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; background: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: 6px;">
+                        <strong>Why Spatial Game Theory Matters:</strong> In well-mixed populations, defectors can easily overrun cooperators. But on a spatial lattice, cooperators cluster together and form resilient symbiotic colonies that defectors cannot penetrate!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 3: AXELROD TOURNAMENT & REPLICATOR DYNAMICS
+             ========================================== -->
+        <section id="tab-tournament" class="tab-content">
+            <div class="tournament-grid">
+                <!-- Left: Configuration -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🏆 Tournament Setup</div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">Rounds Per Match</div>
+                        <input type="number" id="tournamentRounds" class="number-input" value="100" min="10" max="500">
+                    </div>
+
+                    <div class="control-group" style="margin-top: 0.8rem;">
+                        <div class="control-label">
+                            <span>Noise / Trembling Hand (&epsilon;)</span>
+                            <span style="color: var(--rose);">Mistakes</span>
+                        </div>
+                        <select id="tournamentNoise" class="btn-secondary" style="width: 100%; padding: 0.5rem;">
+                            <option value="0.0">0% (Pure Deterministic)</option>
+                            <option value="0.02">2% Noise (Rare Accidents)</option>
+                            <option value="0.05">5% Noise (Moderate Friction)</option>
+                            <option value="0.10">10% Noise (Chaotic Environment)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 0.8rem;">
+                        <div class="control-label">Select Strategies</div>
+                        <div class="strat-checkbox-list" id="tournamentStratList"></div>
+                    </div>
+
+                    <button class="btn-primary" id="btnRunTournament" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
+                        ⚡ Run Round-Robin Tournament
+                    </button>
+                </div>
+
+                <!-- Right: Results & Replicator Chart -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Leaderboard -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">🥇 Axelrod Leaderboard</div>
+                        </div>
+                        <div id="tournamentLeaderboard">
+                            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                Click "Run Round-Robin Tournament" to generate rankings!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pairwise Heatmap -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">🔥 Head-to-Head Payoff Matrix</div>
+                        </div>
+                        <div id="tournamentHeatmap" style="overflow-x: auto;"></div>
+                    </div>
+
+                    <!-- Replicator Dynamics Chart -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">📈 Evolutionary Replicator Dynamics (Generations)</div>
+                        </div>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="replicatorChartCanvas"></canvas>
+                        </div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            Strategies that score above the population average replicate and expand; underperforming strategies decline toward extinction.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 4: AI & DEEP RL LAB
+             ========================================= -->
+        <section id="tab-ai-lab" class="tab-content">
+            <div class="ai-lab-grid">
+                <!-- Training Controls & Graph -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🤖 Reinforcement Learning Training Arena</div>
+                    </div>
+
+                    <div class="grid-2col" style="margin-bottom: 1rem;">
+                        <div class="control-group">
+                            <div class="control-label">Opponent Policy</div>
+                            <select id="rlOpponentSelect" class="btn-secondary" style="width: 100%; padding: 0.5rem;"></select>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label">Training Episodes</div>
+                            <input type="number" id="rlEpisodes" class="number-input" value="60" min="10" max="300">
+                        </div>
+                    </div>
+
+                    <div class="grid-2col" style="margin-bottom: 1rem;">
+                        <div class="control-group">
+                            <div class="control-label">Learning Rate (&alpha;)</div>
+                            <input type="number" id="rlAlpha" class="number-input" value="0.2" step="0.05" min="0.01" max="1.0">
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label">Discount Factor (&gamma;)</div>
+                            <input type="number" id="rlGamma" class="number-input" value="0.9" step="0.05" min="0.1" max="0.99">
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="btnTrainRL" style="width: 100%; padding: 0.75rem;">
+                        🚀 Train Q-Learner Live
+                    </button>
+
+                    <!-- RL Convergence Chart -->
+                    <div style="height: 260px; margin-top: 1.5rem; position: relative;">
+                        <canvas id="rlChartCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Learned Q-Table & Mathematical Explanation -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🧠 Learned State-Action Value Q(s, a) Table</div>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                        The agent learns which action maximizes cumulative discounted return using the <strong>Bellman Optimality Equation</strong>:
+                    </p>
+
+                    <div style="background: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: var(--cyan); margin-bottom: 1rem;">
+                        Q(s, a) &larr; Q(s, a) + &alpha; [ r + &gamma; max<sub>a'</sub> Q(s', a') - Q(s, a) ]
+                    </div>
+
+                    <table class="q-table-visualizer">
+                        <thead>
+                            <tr>
+                                <th>Historical State (s)</th>
+                                <th>Q(s, Cooperate)</th>
+                                <th>Q(s, Defect)</th>
+                                <th>Optimal Action &pi;*(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qTableBody">
+                            <tr>
+                                <td colspan="4" style="color: var(--text-muted); padding: 2rem;">Click "Train Q-Learner Live" to inspect learned weights!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+                        <strong>Key Insight:</strong> When trained against <em>Tit-for-Tat</em>, the Q-Learner discovers that defecting yields immediate temptation (5), but causes long-term mutual punishment (1). The Q-learner naturally converges to mutual cooperation (3, 3) to maximize long-term &gamma;-discounted reward!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 5: CUSTOM MATRIX SANDBOX
+             ========================================== -->
+        <section id="tab-sandbox" class="tab-content">
+            <div class="grid-2col">
+                <!-- Left: Editable Payoffs -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🧪 Custom 2x2 Matrix Editor</div>
+                        <button class="btn-primary" id="btnAnalyzeMatrix" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">⚡ Solve</button>
+                    </div>
+
+                    <div class="sandbox-input-grid">
+                        <div class="input-matrix-cell">
+                            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">(Action A, Action A)</span>
+                            <div class="input-pair">
+                                <input type="number" id="sb_r00_1" class="number-input sandbox-val" value="3" style="color: var(--cyan);">
+                                <input type="number" id="sb_r00_2" class="number-input sandbox-val" value="3" style="color: var(--rose);">
+                            </div>
+                        </div>
+
+                        <div class="input-matrix-cell">
+                            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">(Action A, Action B)</span>
+                            <div class="input-pair">
+                                <input type="number" id="sb_r01_1" class="number-input sandbox-val" value="0" style="color: var(--cyan);">
+                                <input type="number" id="sb_r01_2" class="number-input sandbox-val" value="5" style="color: var(--rose);">
+                            </div>
+                        </div>
+
+                        <div class="input-matrix-cell">
+                            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">(Action B, Action A)</span>
+                            <div class="input-pair">
+                                <input type="number" id="sb_r10_1" class="number-input sandbox-val" value="5" style="color: var(--cyan);">
+                                <input type="number" id="sb_r10_2" class="number-input sandbox-val" value="0" style="color: var(--rose);">
+                            </div>
+                        </div>
+
+                        <div class="input-matrix-cell">
+                            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">(Action B, Action B)</span>
+                            <div class="input-pair">
+                                <input type="number" id="sb_r11_1" class="number-input sandbox-val" value="1" style="color: var(--cyan);">
+                                <input type="number" id="sb_r11_2" class="number-input sandbox-val" value="1" style="color: var(--rose);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Computed Results -->
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.6rem; color: var(--cyan);">Analysis Results</h4>
+                        <div id="sandboxResults" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-size: 0.9rem; line-height: 1.6;"></div>
+                    </div>
+                </div>
+
+                <!-- Right: 2D Payoff Geometry Scatter -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📐 2D Payoff Geometry & Pareto Frontier</div>
+                    </div>
+                    <div style="height: 380px; position: relative;">
+                        <canvas id="payoffSpaceCanvas"></canvas>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem;">
+                        Visualizes the convex hull of reachable utility pairs. Points in the upper-right boundary form the <em>Pareto Optimal Frontier</em>.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Game Theory Simulation Studio &bull; Built with PyTorch, FastAPI, HTML5 Canvas & Web Audio API
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/nash.js"></script>
+    <script src="js/strategies.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/spatial.js"></script>
+    <script src="js/tournament.js"></script>
+    <script src="js/arena3d.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
